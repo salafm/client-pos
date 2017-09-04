@@ -1,0 +1,42 @@
+[
+    {
+        "name": "maltyxx/restclient",
+        "version": "v3.0.0",
+        "version_normalized": "3.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/maltyxx/restclient.git",
+            "reference": "5ad3255dba066c4ee25a2e232f0b9f67d6d34eba"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/maltyxx/restclient/zipball/5ad3255dba066c4ee25a2e232f0b9f67d6d34eba",
+            "reference": "5ad3255dba066c4ee25a2e232f0b9f67d6d34eba",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "time": "2017-06-02T10:11:42+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "Apache-2.0"
+        ],
+        "authors": [
+            {
+                "name": "Yoann Vanitou",
+                "email": "yvanitou@gmail.com",
+                "role": "Developer"
+            }
+        ],
+        "description": "REST Full Client for Codeigniter 3",
+        "homepage": "https://github.com/maltyxx/restclient",
+        "keywords": [
+            "client",
+            "codeigniter",
+            "rest"
+        ]
+    }
+]
