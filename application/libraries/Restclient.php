@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-/** Librairie REST Full Client 
+/** Librairie REST Full Client
  * @author Yoann VANITOU
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache 2.0
  * @link https://github.com/maltyxx/restclient
@@ -16,12 +16,12 @@ class Restclient
 
     /**
      * Configuration
-     * @var array 
+     * @var array
      */
     private $config = array(
         'port'          => NULL,
-        'auth'          => FALSE,
-        'auth_type'     => 'basic',
+        'auth'          => false,
+        'auth_type'     => '',
         'auth_username' => '',
         'auth_password' => '',
         'header'        => FALSE,
@@ -34,19 +34,19 @@ class Restclient
 
     /**
      * Information sur la requête
-     * @var array 
+     * @var array
      */
     private $info = array();
 
     /**
      * Code de retour
-     * @var integer 
+     * @var integer
      */
     private $errno;
 
     /**
      * Erreurs
-     * @var string 
+     * @var string
      */
     private $error;
 
@@ -58,31 +58,31 @@ class Restclient
 
     /**
      * En-tête de l'envoi
-     * @var array 
+     * @var array
      */
     private $output_header = array();
 
     /**
      * Valeur du retour
-     * @var string 
+     * @var string
      */
     private $input_value;
 
     /**
      * En-tête du retour
-     * @var string 
+     * @var string
      */
     private $input_header;
-    
+
     /**
      * Code du retour
      * @var integer|NULL
      */
     private $http_code;
-    
+
     /**
      * type de contenu retour
-     * @var string|NULL 
+     * @var string|NULL
      */
     private $content_type;
 
@@ -150,7 +150,7 @@ class Restclient
     {
         return $this->_query('put', $url, $data, $options);
     }
-    
+
     /**
      * Requête PATCH
      * @param type $url
@@ -198,22 +198,22 @@ class Restclient
 
         return $cookies;
     }
-    
+
     /**
      * Les dernières informations de la requête
      * @return array
      */
     public function info()
-    {        
+    {
         return $this->info;
     }
-    
+
     /**
      * Le dernier code de retour http
      * @return interger|NULL
      */
     public function http_code()
-    {        
+    {
         return $this->http_code;
     }
 
@@ -407,16 +407,16 @@ class Restclient
 
         // Récupération de l'URL et affichage sur le naviguateur
         $response = curl_exec($curl);
-        
+
         // Récupération du code http
         $this->http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        
+
         // Récupération du type de contenu
         $this->content_type = curl_getinfo($curl, CURLINFO_CONTENT_TYPE);
 
         // Information sur la requete
         $this->info = curl_getinfo($curl);
-        
+
         // Gestion des erreurs
         if ($response === FALSE) {
             $this->errno = curl_errno($curl);
@@ -426,20 +426,20 @@ class Restclient
 
         // Fermeture de la session cURL
         curl_close($curl);
-                
+
         // Si le contenu est du json
         if (strstr($this->content_type, 'json')) {
             $result = json_decode($response, $this->config['result_assoc']);
-        
+
         // Si autre format
         } else {
             $result = $response;
         }
-        
+
         // Référence de la réponse
         $this->input_value = & $response;
 
-        // Si le cahche est activé et que la méthode est de type GET 
+        // Si le cahche est activé et que la méthode est de type GET
         if ($this->config['cache'] && $method == 'get') {
             // Si la clé existe dans le noeud
             if (!$keys = $this->CI->cache->get($api) OR ! isset($keys[$cache_key])) {
@@ -472,10 +472,10 @@ class Restclient
         if (!empty($data)) {
             $this->input_header .= $data;
         }
-        
+
         return strlen($data);
     }
-    
+
 }
 
 /* End of file Restclient.php */
