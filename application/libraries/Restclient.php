@@ -90,6 +90,7 @@ class Restclient
      * Constructeur
      * @param array $config
      */
+
     public function __construct(array $config = array())
     {
 
@@ -354,9 +355,18 @@ class Restclient
         if ($this->config['auth']) {
             switch ($this->config['auth_type']) {
                 // Authentification http basic
-                case 'basic':
-                    curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-                    curl_setopt($curl, CURLOPT_USERPWD, "{$this->config['auth_username']}:{$this->config['auth_password']}");
+                case 'basic':{
+                  curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+                  curl_setopt($curl, CURLOPT_USERPWD, "{$this->config['auth_username']}:{$this->config['auth_password']}");
+                  break;
+                }
+                case 'digest': {
+                  curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
+                  curl_setopt($curl, CURLOPT_USERPWD, "{$this->config['auth_username']}:{$this->config['auth_password']}");
+                  break;
+                }
+
+
             }
         }
 

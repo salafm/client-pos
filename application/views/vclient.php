@@ -171,21 +171,23 @@
                     <div class="clearfix"></div>
                   </div>
                   <div class="x_content">
-                    <select class="" id="pilih" onchange="lihatcabang(this.value)">
-                    <?php foreach ($cabang as $c) {?>
-                        <option value="<?php echo $c->id; ?>"><?php echo $c->nama; ?></option>
-                        <?php  } ?>
-                      </select>
                       <div class="clearfix"></div>
                       <table id="table" class="table">
                         <tr>
+                          <th>kode barang</th>
                           <th>nama</th>
-                          <th>username</th>
-                          <th>password</th>
+                          <th>harga</th>
                         </tr>
+                          <?php foreach ($barang as $b) {?>
                         <tr class="hasil">
+                            <td><?php echo $b->idbarang; ?></td>
+                            <td><?php echo $b->nama; ?></td>
+                            <td><?php echo $b->harga; ?></td>
                         </tr>
+                          <?php  } ?>
                       </table>
+                      <button class="btn btn-default" type="button" name="button" onclick="cek()">Tambah</button>
+                      <p id="teks"></p>
                   </div>
                 </div>
               </div>
@@ -205,14 +207,6 @@
       </div>
     </div>
     <script type="text/javascript">
-      function lihatcabang(id) {
-          $.get({
-            url:'<?php echo site_url('client/lihatcabang/'); ?>'+id,
-            success: function(data){
-              $('.hasil').html(data);
-          }
-        });
-      }
     </script>
 
     <!-- jQuery -->

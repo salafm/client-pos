@@ -208,7 +208,7 @@ class Curl {
 	{
 		$this->option(CURLOPT_HTTPAUTH, constant('CURLAUTH_' . strtoupper($type)));
 		$this->option(CURLOPT_USERPWD, $username . ':' . $password);
-		return $this;
+		return $result = curl_exec($this->url);
 	}
 
 	public function proxy($url = '', $port = 80)
