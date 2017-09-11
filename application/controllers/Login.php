@@ -18,22 +18,33 @@ class Login extends CI_Controller
   function index()
   {
     $h = $this->db->get('apilogin')->result_array();
-    $id[] = array('id'=>'100000');
+    $userid = '';
+    $id[] = array('id'=>'0');
     if($h != NULL){
       $user = $h[0]['user'];
       $pass = $h[0]['pass'];
+      $keys = $h[0]['apikeys'];
       $config = array (
         'auth'          => TRUE,
         'auth_type'     => 'digest',
         'auth_username' => $user,
         'auth_password' => $pass);
       $this->restclient->initialize($config);
-      $id = $this->restclient->get($this->API.'/api/cabangid/user/'.$user);
+      $id = $this->restclient->get($this->API.'/api/cabangid/user/'.$user.'/X-API-KEY/'.$keys);
+      if(!array_key_exists('error',$id)){
+        $userid = $id[0]['id'];
+      }
+      $input = array(
+        'userid' => $userid
+      );
+      $this->mapi->simpanid($user,$input,'apilogin');
       if (count($id) == 2){
         if($id['error'] == 'IP unauthorized'){
            $id[] = array('id'=>'ip');
         }elseif ($id['error'] == 'Invalid credentials') {
           $id[] = array('id'=>'invalid');
+        }elseif ($id['error'] == 'Invalid API key ') {
+          $id[] = array('id'=>'api');
         }
       }
     }
@@ -51,9 +62,11 @@ class Login extends CI_Controller
 	{
 		$user = $this->input->post('user',true);
 		$pass = $this->input->post('pass',true);
+    $key = $this->input->post('api',true);
 		$input = array(
 			'user' => $user,
-			'pass' => $pass
+			'pass' => $pass,
+      'apikeys' => $key
 		);
 
 		$this->mapi->simpan('apilogin',$input);

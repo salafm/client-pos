@@ -127,6 +127,12 @@
           <input name="pass" id="passw" placeholder="Masukkan password install client" class="form-control" type="text">
                 </div>
               </div>
+              <div class="form-group">
+                <label class="control-label col-md-3">API Key</label>
+                <div class="col-md-9">
+          <input name="api" id="api" placeholder="Masukkan 16 digit API Key" class="form-control" type="text">
+                </div>
+              </div>
             </div>
           </form>
             </div>
@@ -157,6 +163,10 @@
               hapus();
               alert('Ip tidak terdaftar diserver, lakukan setting IP terlebih dahulu');
               location.reload();
+            }else if (value == 'api') {
+              hapus();
+              alert('API Key tidak benar, mohon dicek kembali');
+              location.reload();
             }
           }else {
             $('#form')[0].reset();
@@ -165,7 +175,7 @@
             $('#modal_form').on('shown.bs.modal', function () {
                 $('#users').focus();
             });
-            $("#passw").on('keypress', function(event){
+            $("#api").on('keypress', function(event){
               if(event.keyCode == 13){
                 event.preventDefault();
                 $("#btnSave").click();
@@ -192,7 +202,7 @@
        },
        error: function (jqXHR, textStatus, errorThrown)
    		{
-   			alert('Gagal melakukan pengecekan data');
+   			alert('Gagal melakukan pengecekan data \n'+ errorThrown);
    		}
       });
     }
