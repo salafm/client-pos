@@ -13,7 +13,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Restopos | Masuk</title>
+    <title>Waroenkpos | Masuk</title>
 
     <!-- Bootstrap -->
     <link href="<?php echo base_url('vendors/bootstrap/dist/css/bootstrap.min.css'); ?>" rel="stylesheet">
@@ -32,20 +32,26 @@
     <div>
       <a class="hiddenanchor" id="signup"></a>
       <a class="hiddenanchor" id="signin"></a>
-
+      <?php
+  		if((isset($logins))=='gagal'){
+  			$hidden = '';
+  		}
+  		else{$hidden='hidden';}
+  	  ?>
       <div class="login_wrapper">
         <div class="animate form login_form">
           <section class="login_content">
-            <form action="<?php echo site_url('client'); ?>" method="post">
+            <form action="<?php echo site_url('login/aksi_login'); ?>" method="post">
               <h1>Masuk ke Sistem</h1>
-              <div class="">
-              </div>
+              <div>
+      				      <p class="<?php echo $hidden; ?> btn-danger">Username atau Password salah</p>
+      			  </div>
               <div class="input-group">
-                <input autofocus type="text" class="form-control" placeholder="Username" name="username" required="" />
+                <input autofocus type="text" class="form-control" placeholder="Username" name="username" required="" autocomplete="off" autofocus/>
 				<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
               </div>
               <div class="input-group">
-                <input type="password" class="form-control" placeholder="Password" name="password" required="" />
+                <input type="password" class="form-control" placeholder="Password" name="password" required="" autocomplete="off" />
 				<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
               </div>
               <div>
@@ -64,8 +70,8 @@
                 <br />
 
                 <div>
-                  <h1><i class="fa fa-cutlery"></i> RESTo<b><i>pos</i></b></h1>
-                  <p>©2017 Hak Cipta dilindungi Undang-Undang. <b>Restopos</b></p>
+                  <h1><i class="fa fa-cutlery"></i> Waroenk<b><i>pos</i></b></h1>
+                  <p>©2017 Hak Cipta dilindungi Undang-Undang. <b>Waroenkpos</b></p>
                 </div>
               </div>
             </form>
@@ -93,8 +99,8 @@
                 <br />
 
                 <div>
-                  <h1><i class="fa fa-cutlery"></i> RESTo<b><i>pos</i></b></h1>
-                  <p>©2017 Hak Cipta dilindungi Undang-Undang. <b>Restopos</b></p>
+                  <h1><i class="fa fa-cutlery"></i> Waroenk<b><i>pos</i></b></h1>
+                  <p>©2017 Hak Cipta dilindungi Undang-Undang. <b>Waroenkpos</b></p>
                 </div>
               </div>
             </form>
