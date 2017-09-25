@@ -21,6 +21,11 @@
         float: none !important;
         width: 100% !important;
       }
+
+      .kotak{
+        top:12px;
+      }
+
     </style>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <!-- Meta, title, CSS, favicons, etc. -->
@@ -62,12 +67,25 @@
           <div class="nav_menu">
             <nav>
               <ul class="nav navbar-nav navbar-right">
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <a href="<?php echo site_url('client')?>" class="site_title"><i class="fa fa-cutlery"></i> Waroenk<b><i>pos</i></b></a>
+                </div>
+                <div class="col-md-1">
+                  
+                </div>
+                <div class="col-md-2 kotak">
+                  <input class="form-control" value="<?php echo $cabang['nama']?>" disabled>
+                </div>
+                <div class="col-md-2 kotak">
+                  <?php $localIP = getHostByName(getHostName()); ?>
+                  <input class="form-control" value="<?php echo $localIP ?>" disabled>
+                </div>
+                <div class="col-md-2 kotak">
+                  <input class="form-control" id="pendapatan" value="Rp. <?php echo number_format($total['total'],2,",","."); ?>" disabled>
                 </div>
                 <li class="">
                   <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false" id="drop">
-                    <img src="images/img.jpg" alt="">John Doe
+                    <img src="<?php echo base_url('build/images/user.png'); ?>" alt=""><?php echo $this->session->userdata('namapetugas');?>
                     <span class=" fa fa-angle-down"></span>
                   </a>
                   <ul class="dropdown-menu dropdown-usermenu pull-right">
@@ -117,121 +135,118 @@
         </div>
         <!-- /top navigation -->
 
-        <!-- page content -->
-        <div class="right_col" role="main">
-          <div class="">
+          <div class="right_col" role="main">
+            <div class="">
 
-            <div class="clearfix"></div>
+              <div class="clearfix"></div>
 
-            <div class="row">
-              <div class="col-md-6 col-sm-6 col-xs-12">
-                <div class="x_panel">
-                  <div class="x_title">
-                    <h2><i class="glyphicon glyphicon-shopping-cart"></i> Keranjang</h2>
-                    <div class="clearfix"></div>
-                  </div>
-                  <div class="x_content">
-                    <form class="" id="form">
-                    <table class="table">
-                      <thead>
-                        <tr>
-                          <th>Id</th>
-                          <th>Produk</th>
-                          <th>Jumlah</th>
-                          <th>Harga</th>
-                          <th>Sub-Total</th>
-                          <th></th>
-                        </tr>
-                      </thead>
-                      <tbody class="hasil">
-                        <tr>
-                          <td colspan="2"><strong>Total Belanja</strong></td>
-                          <td colspan="2"><p><b class="total"><?php echo $this->cart->total_items(); ?></b> Item(s)</p></td></td>
-                          <td style=""><b>Rp. <?php echo $this->cart->format_number($this->cart->total()); ?></b></td>
-                          <td></td>
-                        </tr>
-                      </tbody>
-                      </table>
-                      <input type="submit" id="btnSave" class="btn btn-default" value="Simpan">
-                      <button type="reset" id="reset" class="btn btn-default">Reset</button>
-                      <button type="button" id="print" class="btn btn-primary pull-right"><i class="fa fa-print"></i> Print</button>
-                    </form>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6 col-sm-6 col-xs-12">
-                <div class="x_panel">
-                  <div class="x_title">
-                    <h2><i class="glyphicon glyphicon-list"></i> Daftar Produk</h2>
-                    <div class="clearfix"></div>
-                  </div>
-                  <div class="x_content">
-                   <div class="clearfix"></div>
-                    <table id="myTable" class="table table-striped table-bordered dt-responsive nowrap " cellspacing="0" width="100%">
-                      <thead>
-                        <tr>
-                          <th>kode produk</th>
-                          <th>nama</th>
-                          <th>harga</th>
-                          <th>stok</th>
-                          <th>tambah</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <?php foreach ($produk as $p) {?>
-                          <tr class="hasil">
-                              <td><?php echo $p->idproduk; ?></td>
-                              <td><?php echo $p->nama; ?></td>
-                              <td>Rp. <?php echo $p->harga; ?></td>
-                              <td><?php echo $p->stok; ?></td>
-                              <td><button type="button" class="btn btn-default submit btn-sm btn-default tambah" id="<?php echo $p->idproduk; ?>"> <i class="fa fa-shopping-cart"></i></button></td>
-                          </tr>
-                        <?php  } ?>
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-                <div class="col-md-12 col-sm-12 col-xs-12">
+              <div class="row">
+                <div class="col-md-6 col-sm-6 col-xs-12">
                   <div class="x_panel">
                     <div class="x_title">
-                      <h2>Plain Page</h2>
+                      <h2><i class="glyphicon glyphicon-shopping-cart"></i> Keranjang</h2>
                       <div class="clearfix"></div>
                     </div>
                     <div class="x_content">
+                      <form class="" id="form">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Id</th>
+                            <th>Produk</th>
+                            <th>Jumlah</th>
+                            <th>Harga</th>
+                            <th>Sub-Total</th>
+                            <th></th>
+                          </tr>
+                        </thead>
+                        <tbody class="hasil">
+                          <tr>
+                            <td colspan="2"><strong>Total Belanja</strong></td>
+                            <td colspan="2"><p><b class="total"><?php echo $this->cart->total_items(); ?></b> Item(s)</p></td></td>
+                            <td style=""><b>Rp. <?php echo number_format($this->cart->total(),2,",","."); ?></b></td>
+                            <td></td>
+                          </tr>
+                        </tbody>
+                        </table>
+                        <input type="submit" id="btnSave" class="btn btn-default" value="Simpan">
+                        <button type="button" id="btn" class="btn btn-default pull-right" value="">Print</button>
+                        <input type="reset" id="clear" class="btn btn-default" value="Reset">
+                      </form>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                  <div class="x_panel">
+                    <div class="x_title">
+                      <h2><i class="glyphicon glyphicon-gift"></i> Produk</h2>
                       <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                     <div class="clearfix"></div>
                       <table id="myTable" class="table table-striped table-bordered dt-responsive nowrap " cellspacing="0" width="100%">
                         <thead>
                           <tr>
-                            <th>kode barang</th>
+                            <th>kode produk</th>
                             <th>nama</th>
                             <th>harga</th>
                             <th>stok</th>
-                            <th>satuan</th>
+                            <th>tambah</th>
                           </tr>
                         </thead>
                         <tbody>
-                          <?php foreach ($barang as $b) {?>
+                          <?php foreach ($produk as $p) {?>
                             <tr class="hasil">
-                                <td><?php echo $b->idbarang; ?></td>
-                                <td><?php echo $b->nama; ?></td>
-                                <td>Rp. <?php echo $b->harga; ?></td>
-                                <td><?php echo $b->stok; ?></td>
-                                <td><?php echo $b->satuan; ?></td>
+                                <td><?php echo $p->idproduk; ?></td>
+                                <td><?php echo $p->nama; ?></td>
+                                <td>Rp. <?php echo $p->harga; ?></td>
+                                <td><?php echo $p->stok; ?></td>
+                                <td><button type="button" class="btn btn-default submit btn-sm btn-default tambah" id="<?php echo $p->idproduk; ?>"> <i class="fa fa-shopping-cart"></i></button></td>
                             </tr>
                           <?php  } ?>
                         </tbody>
                       </table>
-                      <a href="<?php echo site_url('client/reset'); ?>" class="btn btn-default btn-sm"><i class="fa fa-trash-o"></i> Clear</a>
                     </div>
                   </div>
                 </div>
+                  <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="x_panel">
+                      <div class="x_title">
+                        <h2>Plain Page</h2>
+                        <div class="clearfix"></div>
+                      </div>
+                      <div class="x_content">
+                        <div class="clearfix"></div>
+                        <table id="myTable1" class="table table-striped table-bordered dt-responsive nowrap " cellspacing="0" width="100%">
+                          <thead>
+                            <tr>
+                              <th>kode barang</th>
+                              <th>nama</th>
+                              <th>harga</th>
+                              <th>stok</th>
+                              <th>satuan</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <?php foreach ($barang as $b) {?>
+                              <tr class="hasil">
+                                  <td><?php echo $b->idbarang; ?></td>
+                                  <td><?php echo $b->nama; ?></td>
+                                  <td>Rp. <?php echo $b->harga; ?></td>
+                                  <td><?php echo $b->stok; ?></td>
+                                  <td><?php echo $b->satuan; ?></td>
+                              </tr>
+                            <?php  } ?>
+                          </tbody>
+                        </table>
+                        <a href="<?php echo site_url('client/reset'); ?>" class="btn btn-default btn-sm"><i class="fa fa-trash-o"></i> Clear</a>
+                      </div>
+                    </div>
+                  </div>
+              </div>
             </div>
           </div>
-        </div>
-        <!-- /page content -->
 
-        <!-- footer content -->
         <footer>
           <div class="pull-right">
             Page rendered in <strong>{elapsed_time}</strong> seconds. Gentelella - Bootstrap Admin Template by <a href="https://colorlib.com">Colorlib</a>
@@ -239,8 +254,8 @@
           <div class="clearfix"></div>
         </footer>
         <!-- /footer content -->
+        </div>
       </div>
-    </div>
 
 
     <!-- jQuery -->
@@ -272,8 +287,9 @@
         var id = $(this).prop('id');
         $.get({
           url:'<?php echo site_url('client/tambahcart/') ?>'+id,
+          dataType:'json',
           success:function(data){
-            $('tbody.hasil').html(data);
+            $('tbody.hasil').html(data.isi);
           }
         });
       });
@@ -282,8 +298,9 @@
         var id = $(this).prop('id');
         $.get({
           url:'<?php echo site_url('client/hapuscart/') ?>'+id,
+          dataType:'json',
           success:function(data){
-            $('tbody.hasil').html(data);
+            $('tbody.hasil').html(data.isi);
           }
         });
       });
@@ -296,17 +313,19 @@
           url:'<?php echo site_url('client/updatecart/') ?>',
           type:'get',
           data:{'id' : id, 'value': value},
+          dataType:'json',
           success:function(data){
-            $('tbody.hasil').html(data);
+            $('tbody.hasil').html(data.isi);
           }
         });
       });
 
-      $(document).on('click','#reset', function(){
+      $(document).on('click','#clear', function(){
         $.get({
           url: '<?php echo site_url('client/resetcart') ?>',
+          dataType:'json',
           success:function(data){
-            $('tbody.hasil').html(data);
+            $('tbody.hasil').html(data.isi);
           }
         });
       });
@@ -317,13 +336,21 @@
         url : '<?php echo site_url('client/simpantransaksi/');?>',
         type: "POST",
         data: $('#form').serialize(),
-        dataType: "JSON",
-        success: function(response){
-          alert(response.pesan);
-          location.reload();
+        dataType:'json',
+        success: function(data){
+          $('#myTable').DataTable().destroy();
+  				$('#myTable tbody').html(data.tabel);
+  				$(document).ready(function() {
+  					$('#myTable').DataTable({
+              responsive:false
+            });
+  				});
+          $('#pendapatan').val('Rp. '+data.penghasilan);
+          $('tbody.hasil').html(data.isi);
+          $("<iframe>").hide().attr('src','<?php echo site_url('invoice/index/');?>'+data.id).appendTo("body");
         },
         error: function (jqXHR, textStatus, errorThrown){
-          alert(jqXHR+' '+textStatus+'\n'+errorThrown);
+          alert('Field belum terisi');
         }
       });
       e.preventDefault();

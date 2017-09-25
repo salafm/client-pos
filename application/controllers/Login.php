@@ -35,11 +35,31 @@ class Login extends CI_Controller
       $id = $this->restclient->get($this->API.'/api/cabangid/user/'.$user.'/waroenk/'.$keys);
       if(!array_key_exists('error',$id)){
         $userid = $id[0]['id'];
+        $alamat = $id[0]['alamat'];
+        $telp = $id[0]['telfon'];
+        $email = $id[0]['email'];
+        $nama = $id[0]['nama'];
         $petugas = $this->restclient->get($this->API.'/api/petugas/id/'.$userid.'/waroenk/'.$keys);
         foreach ($petugas as $p) {
+          $hasil = $this->db->query('SELECT MAX(id) as id FROM petugas');
+          if($hasil->num_rows()>0){
+            $hasil = $hasil->result();
+            $ids = $hasil[0]->id+1;
+            if(strlen((string)$ids) == 1){
+              $ids = '000'.$ids;
+            }elseif (strlen((string)$ids) == 2) {
+              $ids = '00'.$ids;
+            }elseif (strlen((string)$ids) == 3) {
+              $ids ='0'.$ids;
+            }else{
+              $ids = $ids;
+            }
+          }else{
+            $ids = '0001';
+          }
           $inputpetugas = array(
             'id' => $p['id'],
-            'idpetugas' => substr($user,0,3).'0'.$p['id'],
+            'idpetugas' => substr($user,0,3).$ids,
             'user' => $p['user'],
             'pass' => $p['pass'],
             'nama' => $p['nama'],
@@ -58,7 +78,11 @@ class Login extends CI_Controller
         }
       }
       $input = array(
-        'userid' => $userid
+        'userid' => $userid,
+        'nama' => $nama,
+        'email' => $email,
+        'telfon' => $telp,
+        'alamat' => $alamat
       );
       $this->mdata->simpanid($user,$input,'apilogin');
     }
@@ -114,9 +138,9 @@ class Login extends CI_Controller
 		$data = $this->mdata->cek_login('petugas',$where)->result_array();
 		if($cek > 0){
 			$data_session = array(
-				'user' => $user,
+				'users' => $user,
 				'statuss' => "login",
-				'nama' => $data[0]['nama'],
+				'namapetugas' => $data[0]['nama'],
         'id' => $data[0]['id'],
         'idpetugas' => $data[0]['idpetugas']
 				);

@@ -13,6 +13,7 @@ class Client extends CI_Controller
        if($h != NULL){
          $user = $h[0]['user'];
          $pass = $h[0]['pass'];
+         $nama = $h[0]['nama'];
          $config = array (
          'auth'          => TRUE,
          'auth_type'     => 'basic',
@@ -21,6 +22,7 @@ class Client extends CI_Controller
          $this->restclient->initialize($config);
          $this->id = $this->mdata->getId($user);
          $this->key = $this->mdata->getKey($user);
+         $this->nama = $nama;
        }
 
       if($this->session->userdata('statuss') != "login"){
@@ -30,22 +32,17 @@ class Client extends CI_Controller
 
     public function index()
     {
-        $this->db->trans_begin();
         $id = $this->id;
         $key = $this->key;
-        $this->updatetabel($id,$key);
         $this->restclient->post(($this->API.'/api/petugas/waroenk/'.$key),['id' => $this->session->userdata('id')]);
-        //this->restclient->debug();
-        if ($this->db->trans_status() === FALSE)
-        {
-                $this->db->trans_rollback();
-        }
-        else
-        {
-                $this->db->trans_commit();
-        }
+        $this->updatetabel($id,$key);
+        //$this->updatestokserver($id,$key);
+        $this->restock();
+        //$this->restclient->debug();
         $data['barang'] = $this->mdata->tampil_all('barang')->result();
         $data['produk'] = $this->mdata->tampil_all('produk')->result();
+        $data['cabang'] = array('nama' => $this->nama);
+        $data['total'] = array('total' => $this->pendapatansehari());
         $this->cart->destroy();
 		    $this->load->view('vclient',$data);
     }
@@ -53,7 +50,7 @@ class Client extends CI_Controller
     function updatetabel($id,$key){
       $barangclient = json_decode(json_encode($this->restclient->get($this->API.'/api/barang/id/'.$id.'/waroenk/'.$key)), FALSE);
       if(sizeof($barangclient) > 0){
-        $this->restclient->post(($this->API.'/api/barang/waroenk/'.$key),['id' => $id]);
+        $this->db->trans_begin();
         foreach ($barangclient as $bc){
           $input = array(
             'idbarang' => $bc->idbarang,
@@ -71,11 +68,20 @@ class Client extends CI_Controller
           $where = array('idbarang' => $bc->idbarang);
           $this->mdata->simpanjikabaru('barang',$where,$input,$harga);
         }
+        if ($this->db->trans_status() === FALSE)
+        {
+                $this->db->trans_rollback();
+        }
+        else
+        {
+                $this->db->trans_commit();
+                $this->restclient->post(($this->API.'/api/barang/waroenk/'.$key),['id' => $id]);
+        }
       }
 
       $produkclient = json_decode(json_encode($this->restclient->get($this->API.'/api/produk/id/'.$id.'/waroenk/'.$key)), FALSE);
       if (sizeof($produkclient) > 0 ){
-        $this->restclient->post(($this->API.'/api/produk/waroenk/'.$key),['id' => $id]);
+        $this->db->trans_begin();
         foreach ($produkclient as $pc){
           $input = array(
             'idproduk' => $pc->idproduk,
@@ -90,20 +96,34 @@ class Client extends CI_Controller
           $produkdetails = json_decode(json_encode($this->restclient->get($this->API.'/api/produkdetails/id/'.$id.'/waroenk/'.$key)), FALSE);
           foreach ($produkdetails as $pd) {
             $input = array(
-              'id' => $pd->id,
               'idproduk' => $pd->idproduk,
               'idbarang' => $pd->idbarang,
               'jumlah' => $pd->jumlah
             );
-            $this->mdata->simpan2('produk_details',$input);
+            $input2 = array(
+              'idproduk' => $pd->idproduk.'svr',
+              'idbarang' => $pd->idbarang,
+              'jumlah' => $pd->jumlah
+            );
+            $this->mdata->simpanjikabaru('produk_details',array('idproduk' => $pd->idproduk, 'idbarang' => $pd->idbarang),$input,array('jumlah' => $pd->jumlah));
+            $this->mdata->simpanjikabaru2('produk_details',array('idproduk' => $pd->idproduk.'svr', 'idbarang' => $pd->idbarang),$input2);
           }
+        }
+        if ($this->db->trans_status() === FALSE)
+        {
+                $this->db->trans_rollback();
+        }
+        else
+        {
+                $this->db->trans_commit();
+                $this->restclient->post(($this->API.'/api/produk/waroenk/'.$key),['id' => $id]);
         }
       }
 
 
       $barangmasuk = json_decode(json_encode($this->restclient->get($this->API.'/api/barangmasuk/id/'.$id.'/waroenk/'.$key)), FALSE);
       if (sizeof($barangmasuk) > 0 ){
-        $this->restclient->post(($this->API.'/api/barangmasuk/waroenk/'.$key),['id' => $id]);
+        $this->db->trans_begin();
         foreach ($barangmasuk as $bm) {
           $input = array(
             'id' => $bm->id,
@@ -125,6 +145,53 @@ class Client extends CI_Controller
             $this->mdata->simpanjikabaru('barangmasuk_details',$where,$input,array('id' => $bmd->id));
           }
         }
+        if ($this->db->trans_status() === FALSE)
+        {
+                $this->db->trans_rollback();
+        }
+        else
+        {
+                $this->db->trans_commit();
+                $this->restclient->post(($this->API.'/api/barangmasuk/waroenk/'.$key),['id' => $id]);
+        }
+      }
+
+      $cekdelete = json_decode(json_encode($this->restclient->get($this->API.'/api/cekdelete/id/'.$id.'/waroenk/'.$key)), FALSE);
+      if(sizeof($cekdelete) > 0){
+        $this->db->trans_begin();
+        foreach ($cekdelete as $cd) {
+          $where = array(
+            $cd->kolom => $cd->idkolom
+          );
+          if($cd->kolom == 'idproduk')
+          {
+            $this->mdata->hapus($where,'produk');
+            $this->mdata->hapus($where,'produk_details');
+            $this->mdata->hapus(array('idproduk' => $cd->idkolom.'svr'),'produk_details');
+          }else{
+            $this->mdata->hapus($where,'barang');
+          }
+        }
+        if ($this->db->trans_status() === FALSE)
+        {
+                $this->db->trans_rollback();
+        }
+        else
+        {
+                $this->db->trans_commit();
+                $this->restclient->delete($this->API.'/api/cekdelete/id/'.$id.'/waroenk/'.$key);
+        }
+      }
+    }
+
+    function updatestokserver($id,$key){
+      $barang = $this->mdata->tampil_all('barang')->result();
+      foreach ($barang as $b) {
+        $this->restclient->post(($this->API.'/api/stokbarang/waroenk/'.$key),['id' => $id, 'idbarang' => $b->idbarang, 'stok' => $b->stok]);
+      }
+      $produk = $this->mdata->tampil_all('produk')->result();
+      foreach ($produk as $p) {
+        $this->restclient->post(($this->API.'/api/stokproduk/waroenk/'.$key),['id' => $id, 'idproduk' => $p->idproduk, 'stok' => $p->stok]);
       }
     }
 
@@ -163,7 +230,7 @@ class Client extends CI_Controller
   		);
   		$this->cart->insert($data);
   		$isi = $this->cart->contents();
-      $this->tampilcart($isi);
+      $this->tampilcart($isi, array());
   	}
 
     function updatecart()
@@ -173,53 +240,43 @@ class Client extends CI_Controller
       $data = array('rowid' => $id, 'qty' => $val);
       $this->cart->update($data);
   		$isi = $this->cart->contents();
-      $this->tampilcart($isi);
+      $this->tampilcart($isi, array());
     }
 
   	function hapuscart($rowid){
   		$this->cart->remove($rowid);
       $isi = $this->cart->contents();
-      $this->tampilcart($isi);
+      $this->tampilcart($isi, array());
   	}
 
-    function tampilcart($isi){
-      $output1 ='';
-      foreach ($isi as $i) {
-        $hasil = $this->mdata->tampil_where('produk',array('idproduk' => $i['id']))->result();
-        $output1 .= '<tr id="'.$i['rowid'].'">
-                      <td class="">'.$i['id'].'<input type="hidden" name="idbarang[]" value="'.$i['id'].'"></td>
-                      <td class="">'.$i['name'].'<input type="hidden" name="nama[]" value="'.$i['name'].'"></td>
-                      <td class="">
-                        <input name="jumlah[]" type="number" class="col-md-3 form-control number" style="width:65px;" value="'.$i['qty'].'" min="0" max="'.$hasil[0]->stok.'">
-                      </td>
-                      <td class="">Rp. '.$this->cart->format_number($i['price']).'<input type="hidden" name="harga[]" value="'.$i['price'].'"></td>
-                      <td class="">Rp. '.$this->cart->format_number($i['subtotal']).'</td>
-                      <td class="">
-                        <a type="button" class="btn btn-default submit btn-sm btn-danger kurang" id="'.$i['rowid'].'"><i class="fa fa-times"></i></a>
-                      </td>
-                    </tr>';
-      }
-      $output1 .=     '<tr>
-                      <td colspan="2"><strong>Total Belanja</strong></td>
-                      <td colspan="2">
-                        <p><b class="total">'.$this->cart->total_items().'</b> Item(s)</p><input type="hidden" name="totalitem" value="'.$this->cart->total_items().'"></td>
-                      <td style=""><b>Rp. '.$this->cart->format_number($this->cart->total()).'</b><input type="hidden" name="totalharga" value="'.$this->cart->total().'"></td>
-                      <td></td>
-                    </tr>';
-      echo $output1;
-    }
-
-  	function resetcart(){
-  		$this->cart->destroy();
+    function resetcart(){
+      $this->cart->destroy();
       $isi = $this->cart->contents();
-      $this->tampilcart($isi);
-	  }
+      $this->tampilcart($isi, array());
+    }
 
     function simpantransaksi(){
       $this->db->trans_begin();
       $idpetugas = $this->session->userdata('idpetugas');
-      $namapetugas = $this->session->userdata('nama');
-      $idtrans = $idpetugas.substr(uniqid(),3);
+      $namapetugas = $this->session->userdata('namapetugas');
+      $date = date('Ymd');
+      $hasil = $this->db->query('SELECT MAX(id) as id FROM barangkeluar');
+      if($hasil->num_rows()>0){
+        $hasil = $hasil->result();
+        $id = $hasil[0]->id+1;
+        if(strlen((string)$id) == 1){
+          $id = '000'.$id;
+        }elseif (strlen((string)$id) == 2) {
+          $id = '00'.$id;
+        }elseif (strlen((string)$id) == 3) {
+          $id ='0'.$id;
+        }else{
+          $id = $id;
+        }
+      }else{
+        $id = '0001';
+      }
+      $idtrans = $date.$id;
       $totalitem = $this->input->post('totalitem',true);
       $totalharga = $this->input->post('totalharga',true);
       $idbarang = $this->input->post('idbarang',true);
@@ -252,7 +309,86 @@ class Client extends CI_Controller
       {
               $this->db->trans_commit();
       }
-      echo json_encode(array("status" => TRUE, 'pesan' => 'Berhasil melakukan transaksi'));
+      $this->cart->destroy();
+      $isi = $this->cart->contents();
+      $this->restock();
+      $this->tampilcart($isi,$idtrans);
+    }
+
+    function tampilcart($isi,$id){
+      $output1 ='';
+      $total = $this->cart->total_items();
+      if ($total == 0){
+        $total = '';
+      }else{
+        $total = $this->cart->total_items();
+      }
+      foreach ($isi as $i) {
+        $hasil = $this->mdata->tampil_where('produk',array('idproduk' => $i['id']))->result();
+        $output1 .= '<tr id="'.$i['rowid'].'">
+                      <td class="">'.$i['id'].'<input type="hidden" name="idbarang[]" value="'.$i['id'].'"></td>
+                      <td class="">'.$i['name'].'<input type="hidden" name="nama[]" value="'.$i['name'].'"></td>
+                      <td class="">
+                        <input name="jumlah[]" type="number" class="col-md-3 form-control number" style="width:65px;" value="'.$i['qty'].'" min="0" max="'.$hasil[0]->stok.'">
+                      </td>
+                      <td class="">Rp. '.number_format($i['price'],2,",",".").'<input type="hidden" name="harga[]" value="'.$i['price'].'"></td>
+                      <td class="">Rp. '.number_format($i['subtotal'],2,",",".").'</td>
+                      <td class="">
+                        <a type="button" class="btn btn-default submit btn-sm btn-danger kurang" id="'.$i['rowid'].'"><i class="fa fa-times"></i></a>
+                      </td>
+                    </tr>';
+      }
+      $output1 .=     '<tr>
+                      <td colspan="2"><strong>Total Belanja</strong></td>
+                      <td colspan="2">
+                        <p><b class="total">'.$this->cart->total_items().'</b> Item(s)</p><input type="text" style="display:none" name="totalitem" value="'.$total.'" required></td>
+                      <td style=""><b>Rp. '.number_format($this->cart->total(),2,",",".").'</b><input type="hidden" name="totalharga" value="'.$this->cart->total().'"></td>
+                      <td></td>
+                    </tr>';
+
+      $produk = $this->mdata->tampil_all('produk')->result();
+      $output2 ='';
+      foreach ($produk as $p) {
+        $output2 .= '<tr class="hasil">
+                        <td>'.$p->idproduk.'</td>
+                        <td>'.$p->nama.'</td>
+                        <td>Rp. '.$p->harga.'</td>
+                        <td>'.$p->stok.'</td>
+                        <td><button type="button" class="btn btn-default submit btn-sm btn-default tambah" id="'.$p->idproduk.'"> <i class="fa fa-shopping-cart"></i></button></td>
+                    </tr>';
+      }
+
+      $rupiah = number_format($this->pendapatansehari(),2,",",".");
+      echo json_encode(array('isi' => $output1, 'id' => $id, 'tabel' => $output2, 'penghasilan' => $rupiah));
+    }
+
+    function restock(){
+      $produk = $this->mdata->tampil_all('produk')->result();
+      foreach ($produk as $p) {
+        $all = $this->db->query('SELECT * FROM barang INNER JOIN produk_details ON barang.idbarang = produk_details.idbarang WHERE idproduk = "'.$p->idproduk.'" ')->result();
+        $min = 10000000000000000;
+        foreach ($all as $a) {
+          $x = $a->stok/$a->jumlah;
+          if($min > $x){
+            $min = floor($x);
+          }else {
+            $min = $min;
+          }
+        }
+        $this->mdata->update(array('idproduk' => $p->idproduk),array('stok' => $min),'produk');
+      }
+    }
+
+    function pendapatansehari(){
+      $d = (int)date('d');
+      $m = (int)date('m');
+      $y = (int)date('Y');
+      $pendapatan = $this->db->query('SELECT totalharga FROM barangkeluar WHERE DAY(tanggal) = '.$d.' AND MONTH(tanggal) = '.$m.' AND YEAR(tanggal) = '.$y.'')->result();
+      $total = 0;
+      foreach ($pendapatan as $pd) {
+        $total = $total + $pd->totalharga;
+      }
+      return $total;
     }
 
     function reset(){

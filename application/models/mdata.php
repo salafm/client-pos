@@ -1,5 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
+date_default_timezone_set("Asia/Jakarta");
+setlocale(LC_ALL, 'IND');
 
 /**
  *
@@ -57,6 +59,13 @@ class mdata extends CI_Model
     }
   }
 
+  function simpanjikabaru2($table,$where,$input)
+  {
+    if($this->tampil_where($table,$where)->num_rows() == 0){
+        $this->simpan($table,$input);
+    }
+  }
+
   function simpanid($u,$fields,$table){
 		$this->db->where('user',$u)->update($table,$fields);
   }
@@ -70,4 +79,9 @@ class mdata extends CI_Model
   {
     return $this->db->query('SELECT idproduk, nama FROM produk WHERE kategori = "'.$kategori.'" AND nama LIKE "%'.$search.'%"');
   }
+
+  function hapus($where,$table)
+	{
+		$this->db->where($where)->delete($table);
+	}
 }

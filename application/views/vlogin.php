@@ -70,7 +70,7 @@
                 <br />
 
                 <div>
-                  <h1><i class="fa fa-cutlery"></i> Waroenk<b><i>pos</i></b></h1>
+                  <h1><i class="fa fa-cutlery"></i> Waroenk<b><i>pos</i></b> Client</h1>
                   <p>©2017 Hak Cipta dilindungi Undang-Undang. <b>Waroenkpos</b></p>
                 </div>
               </div>
@@ -99,7 +99,7 @@
                 <br />
 
                 <div>
-                  <h1><i class="fa fa-cutlery"></i> Waroenk<b><i>pos</i></b></h1>
+                  <h1><i class="fa fa-cutlery"></i> Waroenk<b><i>pos</i></b> Client</h1>
                   <p>©2017 Hak Cipta dilindungi Undang-Undang. <b>Waroenkpos</b></p>
                 </div>
               </div>
