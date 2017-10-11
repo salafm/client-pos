@@ -67,6 +67,14 @@ class Login extends CI_Controller
           );
           $this->mdata->simpan2('petugas',$inputpetugas);
         }
+        $input = array(
+          'userid' => $userid,
+          'nama' => $nama,
+          'email' => $email,
+          'telfon' => $telp,
+          'alamat' => $alamat
+        );
+        $this->mdata->simpanid($user,$input,'apilogin');
       }
       else{
         if($id['error'] == 'IP unauthorized'){
@@ -77,14 +85,6 @@ class Login extends CI_Controller
           $id[] = array('id'=>'api');
         }
       }
-      $input = array(
-        'userid' => $userid,
-        'nama' => $nama,
-        'email' => $email,
-        'telfon' => $telp,
-        'alamat' => $alamat
-      );
-      $this->mdata->simpanid($user,$input,'apilogin');
     }
     if ($this->db->trans_status() === FALSE)
     {
@@ -123,7 +123,6 @@ class Login extends CI_Controller
   {
     $this->mdata->deleteall('apilogin');
     $this->mdata->deleteall('petugas');
-    $this->mdata->deleteall('barang');
     echo 'sukses';
   }
 

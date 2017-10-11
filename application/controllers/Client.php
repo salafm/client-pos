@@ -35,13 +35,20 @@ class Client extends CI_Controller
         $id = $this->id;
         $key = $this->key;
         $this->restclient->post(($this->API.'/api/petugas/waroenk/'.$key),['id' => $this->session->userdata('id')]);
-        $this->updatetabel($id,$key);
-        //$this->updatestokserver($id,$key);
+        $jam = date('H');
+        if($jam == 8){
+          $this->updatetabel($id,$key);
+        }elseif ($jam == 22) {
+          $this->updatestokserver($id,$key);
+        }
         $this->restock();
         //$this->restclient->debug();
         $data['barang'] = $this->mdata->tampil_all('barang')->result();
         $data['produk'] = $this->mdata->tampil_all('produk')->result();
+        $data['tk'] = $this->mdata->tampil_allorder('barangkeluar')->result();
+        $data['tm'] = $this->mdata->tampil_allorder('barangmasuk')->result();
         $data['cabang'] = array('nama' => $this->nama);
+        $data['query'] = $this->mdata;
         $data['total'] = array('total' => $this->pendapatansehari());
         $this->cart->destroy();
 		    $this->load->view('vclient',$data);
@@ -125,9 +132,10 @@ class Client extends CI_Controller
       if (sizeof($barangmasuk) > 0 ){
         $this->db->trans_begin();
         foreach ($barangmasuk as $bm) {
+          $idt = 'in'.trim($bm->idtransaksi,'out');
           $input = array(
             'id' => $bm->id,
-            'idtransaksi' => $bm->idtransaksi,
+            'idtransaksi' => $idt,
             'deskripsi' => $bm->deskripsi,
             'tanggal' => $bm->tanggal
           );
@@ -136,13 +144,13 @@ class Client extends CI_Controller
           $bmdetail = json_decode(json_encode($this->restclient->get($this->API.'/api/bmdetails/id/'.$bm->idtransaksi.'/waroenk/'.$key)), FALSE);
           foreach ($bmdetail as $bmd) {
             $input = array(
-              'idtransaksi' => $bmd->idtransaksi,
+              'idtransaksi' => $idt,
               'idproduk' => $bmd->idproduk,
               'harga' => $bmd->harga,
               'jumlah' => $bmd->jumlah
             );
-            $where = array('idtransaksi' => $bmd->idtransaksi, 'idproduk' => $bmd->idproduk);
-            $this->mdata->simpanjikabaru('barangmasuk_details',$where,$input,array('id' => $bmd->id));
+            $where = array('idtransaksi' => $idt, 'idproduk' => $bmd->idproduk);
+            $this->mdata->simpanjikabaru('barangmasuk_details',$where,$input,array('id' => $idt));
           }
         }
         if ($this->db->trans_status() === FALSE)
@@ -317,6 +325,7 @@ class Client extends CI_Controller
 
     function tampilcart($isi,$id){
       $output1 ='';
+      $isi = array_reverse($isi);
       $total = $this->cart->total_items();
       if ($total == 0){
         $total = '';
@@ -329,7 +338,7 @@ class Client extends CI_Controller
                       <td class="">'.$i['id'].'<input type="hidden" name="idbarang[]" value="'.$i['id'].'"></td>
                       <td class="">'.$i['name'].'<input type="hidden" name="nama[]" value="'.$i['name'].'"></td>
                       <td class="">
-                        <input name="jumlah[]" type="number" class="col-md-3 form-control number" style="width:65px;" value="'.$i['qty'].'" min="0" max="'.$hasil[0]->stok.'">
+                        <input name="jumlah[]" type="number" id="'.$i['id'].'" class="col-md-3 form-control number" style="width:65px;" value="'.$i['qty'].'" min="0" max="'.$hasil[0]->stok.'">
                       </td>
                       <td class="">Rp. '.number_format($i['price'],2,",",".").'<input type="hidden" name="harga[]" value="'.$i['price'].'"></td>
                       <td class="">Rp. '.number_format($i['subtotal'],2,",",".").'</td>
@@ -348,18 +357,57 @@ class Client extends CI_Controller
 
       $produk = $this->mdata->tampil_all('produk')->result();
       $output2 ='';
+      $no = 1;
       foreach ($produk as $p) {
-        $output2 .= '<tr class="hasil">
+        $hasil = $this->mdata->tampil_join3('produk_details',$p->idproduk)->result();
+        $komposisi = 'Komposisi '.$p->nama.' :'."\n";
+        foreach ($hasil as $h) {
+          $komposisi .= $h->jumlah.' '.$h->satuan.' '.$h->nama."\n";
+        }
+        $output2 .= '<tr>
+                        <td>'.$no.'</td>
                         <td>'.$p->idproduk.'</td>
-                        <td>'.$p->nama.'</td>
-                        <td>Rp. '.$p->harga.'</td>
-                        <td>'.$p->stok.'</td>
-                        <td><button type="button" class="btn btn-default submit btn-sm btn-default tambah" id="'.$p->idproduk.'"> <i class="fa fa-shopping-cart"></i></button></td>
+                        <td id="'.$no.'" title="'.$komposisi.'">'.$p->nama.'</td>
+                        <td>Rp. '.number_format($p->harga,2,",",".").'</td>
+                        <td class="stok">'.$p->stok.'</td>
+                        <td><a type="button" name="'.$no.'" class="btn btn-default btn-sm btn-default tambah" id="'.$p->idproduk.'"> <i class="fa fa-shopping-cart"></i></a></td>
+                    </tr>';
+                    $no++;
+      }
+
+      $barang = $this->mdata->tampil_all('barang')->result();
+      $output3 = '';
+      $no = 1;
+      foreach ($barang as $b) {
+        $output3 .= ' <tr class="hasil">
+                        <td>'.$no++.'</td>
+                        <td>'.$b->idbarang.'</td>
+                        <td>'.$b->nama.'</td>
+                        <td>Rp. '.number_format($b->harga,2,",",".").'</td>
+                        <td>'.$b->stok.'</td>
+                        <td>'.$b->satuan.'</td>
+                        <td>'.$b->tanggal.'</td>
+                      </tr>';
+      }
+
+
+      $tk = $this->mdata->tampil_allorder('barangkeluar')->result();
+      $output4 = '';
+      $no = 1;
+      foreach ($tk as $tk) {
+        $output4 .= '<tr id="'.$tk->idtransaksi.'">
+                      <td>'.$no++.'</td>
+                      <td>'.$tk->idtransaksi.'</td>
+                      <td>'.$tk->nama.'</td>
+                      <td>'.$tk->totalbarang.'</td>
+                      <td>'.number_format($tk->totalharga,2,",",".").'</td>
+                      <td>'.$tk->tanggal.'</td>
+                      <td><button class="btn btn-default btn-sm details" id=""><i class="fa fa-info-circle"></i>  &nbsp;details</button></td>
                     </tr>';
       }
 
       $rupiah = number_format($this->pendapatansehari(),2,",",".");
-      echo json_encode(array('isi' => $output1, 'id' => $id, 'tabel' => $output2, 'penghasilan' => $rupiah));
+      echo json_encode(array('isi' => $output1, 'id' => $id, 'produk' => $output2, 'barang' => $output3, 'tk' => $output4, 'penghasilan' => $rupiah, 'isinya' => $isi));
     }
 
     function restock(){
@@ -389,6 +437,38 @@ class Client extends CI_Controller
         $total = $total + $pd->totalharga;
       }
       return $total;
+    }
+
+    function detail()
+    {
+      $id = $this->input->get('id',true);
+      $table = $this->input->get('tabel',true);
+      $hasil = $this->mdata->tampil_join2($table,$id)->result();
+      $output ='';
+      $total = 0;
+      foreach ($hasil as $h) {
+        $barang = $this->mdata->tampil_join3('produk_details',$h->idproduk)->result();
+        $n = sizeof($barang);
+        $c = 0;
+        foreach ($barang as $b) {
+          if ($c==0){
+            $output .= '<tr id="'.$h->idproduk.'"><td rowspan="'.$n.'">'.$h->nama.'</td>';
+            $output .= '<td rowspan="'.$n.'">'.$h->jumlah.'</td>';
+            $output .= '<td rowspan="'.$n.'"> Rp.'.number_format($h->harga,2,",",".").'</td>';
+            $output .= '<td>'.$b->nama.'</td>';
+            $output .= '<td>'.$h->jumlah*$b->jumlah.'</td>';
+            $output .= '<td>'.$b->satuan.'</td></tr>';
+          }
+          else {
+            $output .= '<tr>';
+            $output .= '<td>'.$b->nama.'</td>';
+            $output .= '<td>'.$h->jumlah*$b->jumlah.'</td>';
+            $output .= '<td>'.$b->satuan.'</td></tr>';
+          }
+          $c++;
+        }
+      }
+      echo $output;
     }
 
     function reset(){

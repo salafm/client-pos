@@ -5,6 +5,12 @@
       .main_container{
         color:black !important;
       }
+
+    </style>
+    <style media="print">
+      table.table.table-striped tr.polos td {
+        border: none !important;
+      }
     </style>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <!-- Meta, title, CSS, favicons, etc. -->
@@ -97,6 +103,22 @@
                             <td colspan="2"><b>Total Belanja</b></td>
                             <td><b><?php echo $transaksi[0]->totalbarang ?></b> Item(s)</td>
                             <td><b>Rp. <?php echo number_format($transaksi[0]->totalharga,2,",","."); ?></b></td>
+                          </tr>
+                          <tr class="polos"><td colspan="4">&nbsp;</td></tr>
+                          <tr class="polos">
+                            <td colspan="2"></td>
+                            <td>Bayar</td>
+                            <td>Rp. <?php echo number_format($bayar['pembayaran'],2,",","."); ?></td>
+                          </tr>
+                          <tr class="polos">
+                            <td colspan="2"></td>
+                            <td>Total</td>
+                            <td>Rp. <?php echo number_format($transaksi[0]->totalharga,2,",","."); ?></td>
+                          </tr>
+                          <tr>
+                            <td colspan="2"></td>
+                            <td><b>Kembalian</b></td>
+                            <td><b>Rp. <?php echo number_format($bayar['pembayaran']-$transaksi[0]->totalharga,2,",","."); ?></b></td>
                           </tr>
                         </tbody>
                       </table>

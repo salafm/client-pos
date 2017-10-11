@@ -16,6 +16,10 @@ class mdata extends CI_Model
     return $this->db->get($table);
   }
 
+  function tampil_allorder($table){
+    return $this->db->order_by('id','DESC')->get($table);
+  }
+
   function tampil_where($table, $where){
     return $this->db->get_where($table, $where);
   }
@@ -84,4 +88,8 @@ class mdata extends CI_Model
 	{
 		$this->db->where($where)->delete($table);
 	}
+
+  function tampil_join3($table,$where){
+    return $this->db->query('SELECT * FROM '.$table.' INNER JOIN barang ON '.$table.'.idbarang = barang.idbarang WHERE idproduk = "'.$where.'"');
+  }
 }
