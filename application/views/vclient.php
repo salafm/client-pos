@@ -26,6 +26,10 @@
         padding-top: 12px;
       }
 
+      .meja{
+        padding : 3% 0 !important;
+      }
+
     </style>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <!-- Meta, title, CSS, favicons, etc. -->
@@ -74,7 +78,7 @@
 
                 </div>
                   <li class="col-md-2 col-sm-4 col-xs-5" style="float:right; padding-left:0px; padding-right:0px;">
-                    <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false" id="drop">
+                    <a href="javascript:;" class="user-profile dropdown-toggle pull-right" data-toggle="dropdown" aria-expanded="false" id="drop">
                       <img src="<?php echo base_url('build/images/user.png'); ?>" alt=""><?php echo $this->session->userdata('namapetugas');?>
                       <span class=" fa fa-angle-down"></span>
                     </a>
@@ -144,6 +148,9 @@
               <div class="x_panel">
                 <div class="x_title">
                   <h2><i class="glyphicon glyphicon-shopping-cart"></i> Keranjang</h2>
+                  <div class="pull-right">
+                    <label id="nomor" for="">Nomor Meja : --- </label>
+                  </div>
                   <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
@@ -174,8 +181,9 @@
                       <td></td>
                     </tr>
                   </table>
-                  <input type="submit" id="btnSave" class="btn btn-default" value="Simpan">
+                  <input type="submit" id="btnSave" class="btn btn-default" value="Cetak Nota">
                   <input type="reset" id="clear" class="btn btn-default" value="Reset">
+                  <input type="button" id="btnSave1" class="btn btn-default pull-right" value="Simpan">
                 </form>
                 </div>
               </div>
@@ -185,6 +193,7 @@
               <div class="x_panel">
                 <div class="x_title">
                   <h2><i class="glyphicon glyphicon-gift"></i> Produk</h2>
+                  <a class="btn btn-default btn-sm pull-right" id="tombol"><span class="fa fa-th-large"></span> Pilih Meja</a>
                   <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
@@ -396,6 +405,92 @@
         </div>
       </div>
 
+      <!-- Bootstrap modal -->
+      <div class="modal fade" id="modal_meja" role="dialog">
+      <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h3 class="modal-title">Pilih Meja</h3>
+        </div>
+          <form action="#" id="form_meja" class="form-horizontal">
+        <div class="modal-body form">
+            <div class="form-body">
+              <div class="form-group">
+                <div class="col-md-1"></div>
+                <a href="#" id="meja1" class="btn btn-default col-md-2 meja">1</a>
+                <a href="#" id="meja2" class="btn btn-default col-md-2 meja">2</a>
+                <a href="#" id="meja3" class="btn btn-default col-md-2 meja">3</a>
+                <a href="#" id="meja4" class="btn btn-default col-md-2 meja">4</a>
+                <a href="#" id="meja5" class="btn btn-default col-md-2 meja">5</a>
+              </div>
+              <div class="form-group">
+                <div class="col-md-1"></div>
+                <a href="#" id="meja6" class="btn btn-default col-md-2 meja">6</a>
+                <a href="#" id="meja7" class="btn btn-default col-md-2 meja">7</a>
+                <a href="#" id="meja8" class="btn btn-default col-md-2 meja">8</a>
+                <a href="#" id="meja9" class="btn btn-default col-md-2 meja">9</a>
+                <a href="#" id="meja10" class="btn btn-default col-md-2 meja">10</a>
+              </div>
+              <div class="form-group">
+                <div class="col-md-1"></div>
+                <a href="#" id="meja11" class="btn btn-default col-md-2 meja">11</a>
+                <a href="#" id="meja12" class="btn btn-default col-md-2 meja">12</a>
+                <a href="#" id="meja13" class="btn btn-default col-md-2 meja">13</a>
+                <a href="#" id="meja14" id="meja3" class="btn btn-default col-md-2 meja">14</a>
+                <a href="#" id="meja15" class="btn btn-default col-md-2 meja">15</a>
+              </div>
+              <div class="form-group">
+                <div class="col-md-1"></div>
+                <a href="#" id="meja16" class="btn btn-default col-md-2 meja">16</a>
+                <a href="#" id="meja17" class="btn btn-default col-md-2 meja">17</a>
+                <a href="#" id="meja18" class="btn btn-default col-md-2 meja">18</a>
+                <a href="#" id="meja19" class="btn btn-default col-md-2 meja">19</a>
+                <a href="#" id="meja20" class="btn btn-default col-md-2 meja">20</a>
+              </div>
+              <div class="form-group">
+                <div class="col-md-1"></div>
+                <a href="#" id="meja21" class="btn btn-default col-md-2 meja">21</a>
+                <a href="#" id="meja22" class="btn btn-default col-md-2 meja">22</a>
+                <a href="#" id="meja23" class="btn btn-default col-md-2 meja">23</a>
+                <a href="#" id="meja24" class="btn btn-default col-md-2 meja">24</a>
+                <a href="#" id="meja25" class="btn btn-default col-md-2 meja">25</a>
+              </div>
+              <div class="form-group">
+                <div class="col-md-1"></div>
+                <a href="#" id="meja26" class="btn btn-default col-md-2 meja">26</a>
+                <a href="#" id="meja27" class="btn btn-default col-md-2 meja">27</a>
+                <a href="#" id="meja28" class="btn btn-default col-md-2 meja">28</a>
+                <a href="#" id="meja29" class="btn btn-default col-md-2 meja">29</a>
+                <a href="#" id="meja30" class="btn btn-default col-md-2 meja">30</a>
+              </div>
+              <div class="form-group">
+                <div class="col-md-1"></div>
+                <a href="#" id="meja31" class="btn btn-default col-md-2 meja">31</a>
+                <a href="#" id="meja32" class="btn btn-default col-md-2 meja">32</a>
+                <a href="#" id="meja33" class="btn btn-default col-md-2 meja">33</a>
+                <a href="#" id="meja34" class="btn btn-default col-md-2 meja">34</a>
+                <a href="#" id="meja35" class="btn btn-default col-md-2 meja">35</a>
+              </div>
+              <div class="form-group">
+                <div class="col-md-1"></div>
+                <a href="#" id="meja36" class="btn btn-default col-md-2 meja">36</a>
+                <a href="#" id="meja37" class="btn btn-default col-md-2 meja">37</a>
+                <a href="#" id="meja38" class="btn btn-default col-md-2 meja">38</a>
+                <a href="#" id="meja39" class="btn btn-default col-md-2 meja">39</a>
+                <a href="#" id="meja40" class="btn btn-default col-md-2 meja">40</a>
+              </div>
+            </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default batal1" data-dismiss="modal">Batal</button>
+            </div>
+          </form>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div><!-- /.modal -->
+      <!-- End Bootstrap modal -->
+
 
     <!-- jQuery -->
     <script src="<?php echo base_url('vendors/jquery/dist/jquery.min.js');?>"></script>
@@ -516,7 +611,6 @@
       }).on('keyup', function(e){
         e.preventDefault();
         if(!$("input").is(":focus")){
-          console.log(e.keyCode);
           if (e.keyCode == 65) {
             fok();
           }else if (e.keyCode == 88) {
@@ -626,6 +720,48 @@
         e.preventDefault();
       });
     });
-    </script>
+
+    //-----------------------pilih meja--------------------------------------------
+    $(document).on('click', '#tombol', function(){
+      $('#modal_meja').modal('show');
+      $.get({
+        url : '<?php echo site_url('client/cekmeja') ?>',
+        dataType: 'JSON',
+        success:function(data){
+          for (var i = 0; i < data.length; i++) {
+            var id = i + 1;
+            if(data[i] == 1){
+              $('#meja'+id).attr('class','btn btn-danger col-md-2 meja')
+            }
+          }
+        }
+      });
+    }).on('click', '.meja', function(){
+      var id = $(this).prop('id').replace('meja','');
+      $('#nomor').html('Nomor Meja : '+id);
+      $('#modal_meja').modal('hide');
+      if($(this).prop('class') == 'btn btn-default col-md-2 meja'){
+        $('#clear').click();
+      }
+      $.ajax({
+        url: '<?php echo site_url('client/tampiltrans/') ?>'+id,
+        type: 'get',
+        dataType:'JSON',
+        success:function(data){
+          $('tbody.hasil').html(data.isi);
+        }
+      });
+    }).on('click','#btnSave1', function(){
+      var id = $('#nomor').html().replace('Nomor Meja : ','');
+      $.ajax({
+        url:'<?php echo site_url('client/transaksi') ?>',
+        type:'post',
+        data: $('#form').serialize()+'&idmeja='+id,
+        success:function(data){
+          $('#clear').click();
+        }
+      })
+    });
+  </script>
   </body>
 </html>

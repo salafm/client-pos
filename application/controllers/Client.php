@@ -36,11 +36,14 @@ class Client extends CI_Controller
         $key = $this->key;
         $this->restclient->post(($this->API.'/api/petugas/waroenk/'.$key),['id' => $this->session->userdata('id')]);
         $jam = date('H');
-        if($jam == 8){
+        if($jam >= 0){
           $this->updatetabel($id,$key);
-        }elseif ($jam == 22) {
+        }
+
+        if ($jam < 22) {
           $this->updatestokserver($id,$key);
         }
+
         $this->restock();
         //$this->restclient->debug();
         $data['barang'] = $this->mdata->tampil_all('barang')->result();
@@ -94,7 +97,6 @@ class Client extends CI_Controller
             'idproduk' => $pc->idproduk,
             'nama' => $pc->nama,
             'harga' => $pc->harga,
-            'kategori' => $pc->kategori
           );
           $where = array('idproduk' => $pc->idproduk);
           $input2 = array('nama' => $pc->nama, 'harga' => $pc->harga);
@@ -107,13 +109,7 @@ class Client extends CI_Controller
               'idbarang' => $pd->idbarang,
               'jumlah' => $pd->jumlah
             );
-            $input2 = array(
-              'idproduk' => $pd->idproduk.'svr',
-              'idbarang' => $pd->idbarang,
-              'jumlah' => $pd->jumlah
-            );
             $this->mdata->simpanjikabaru('produk_details',array('idproduk' => $pd->idproduk, 'idbarang' => $pd->idbarang),$input,array('jumlah' => $pd->jumlah));
-            $this->mdata->simpanjikabaru2('produk_details',array('idproduk' => $pd->idproduk.'svr', 'idbarang' => $pd->idbarang),$input2);
           }
         }
         if ($this->db->trans_status() === FALSE)
@@ -145,11 +141,11 @@ class Client extends CI_Controller
           foreach ($bmdetail as $bmd) {
             $input = array(
               'idtransaksi' => $idt,
-              'idproduk' => $bmd->idproduk,
+              'idbarang' => $bmd->idbarang,
               'harga' => $bmd->harga,
               'jumlah' => $bmd->jumlah
             );
-            $where = array('idtransaksi' => $idt, 'idproduk' => $bmd->idproduk);
+            $where = array('idtransaksi' => $idt, 'idbarang' => $bmd->idbarang);
             $this->mdata->simpanjikabaru('barangmasuk_details',$where,$input,array('id' => $idt));
           }
         }
@@ -175,7 +171,6 @@ class Client extends CI_Controller
           {
             $this->mdata->hapus($where,'produk');
             $this->mdata->hapus($where,'produk_details');
-            $this->mdata->hapus(array('idproduk' => $cd->idkolom.'svr'),'produk_details');
           }else{
             $this->mdata->hapus($where,'barang');
           }
@@ -201,30 +196,6 @@ class Client extends CI_Controller
       foreach ($produk as $p) {
         $this->restclient->post(($this->API.'/api/stokproduk/waroenk/'.$key),['id' => $id, 'idproduk' => $p->idproduk, 'stok' => $p->stok]);
       }
-    }
-
-    function search(){
-      $cari = $this->input->post('nama',true);
-      $kategori = $this->input->post('kategori',true);
-      $hasil = $this->mdata->search($cari,$kategori)->result();
-      $cek = $this->mdata->search($cari,$kategori)->num_rows();
-      $output = '<ul class="list-unstyled" id="pilihanbarang">';
-      $baris = 0;
-      if ($cek > 0){
-        foreach ($hasil as $h) {
-          if ($baris == 0){
-            $output .= '<li id="'.$h->idproduk.'" class="list-group-item pilih">'.$h->nama.'</li>';
-            $baris++;
-          }else{
-            $output .= '<li id="'.$h->idproduk.'" class="list-group-item">'.$h->nama.'</li>';
-          }
-        }
-      }
-      else {
-        $output .= '<li class="list-group-item" name="baru">Tidak ditemukan produk "'.$cari.'"</li>';
-      }
-      $output .= '</ul>';
-      echo $output;
     }
 
     function tambahcart($id){
@@ -478,5 +449,71 @@ class Client extends CI_Controller
       $this->mdata->deleteall('produk_details');
       $this->mdata->deleteall('produk');
       redirect(site_url('client'));
+    }
+
+    function cekmeja(){
+      $meja = $this->mdata->tampil_all('trans_meja')->result();
+      foreach ($meja as $m) {
+        $output[] = $m->flag;
+      }
+      echo json_encode($output);
+    }
+
+    function transaksi(){
+      $this->db->trans_begin();
+      $idmeja = $this->input->post('idmeja',true);
+      $idtrans = 'trans'.$idmeja;
+      $idbarang = $this->input->post('idbarang',true);
+      $jumlah = $this->input->post('jumlah',true);
+      for ($i=0; $i < sizeof($idbarang); $i++) {
+        $input = array(
+          'idtransaksi' => $idtrans,
+          'idproduk'    => $idbarang[$i],
+          'jumlah'      => $jumlah[$i]
+        );
+        $input2 = array(
+          'jumlah'      => $jumlah[$i]
+        );
+        $where = array(
+          'idtransaksi' => $idtrans,
+          'idproduk'    => $idbarang[$i]
+        );
+        $this->mdata->simpanjikabaru('trans_dtl',$where,$input,$input2);
+      }
+
+      $inputan = array(
+        'idtransaksi' => $idtrans,
+        'flag' => 1
+      );
+      $this->mdata->update(array('meja' => $idmeja),$inputan,'trans_meja');
+      if ($this->db->trans_status() === FALSE)
+      {
+              $this->db->trans_rollback();
+      }
+      else
+      {
+              $this->db->trans_commit();
+      }
+      $this->cart->destroy();
+      $isi = $this->cart->contents();
+      $this->tampilcart($isi,$idtrans);
+    }
+
+    function tampiltrans($id){
+      $this->cart->destroy();
+      $meja = $this->mdata->tampil_where('trans_meja',array('meja' => $id, 'flag' => '1'))->result();
+      $item = $this->mdata->tampil_where('trans_dtl',array('idtransaksi' => $meja[0]->idtransaksi))->result();
+      foreach ($item as $i) {
+        $produk = $this->mdata->tampil_where('produk',array('idproduk' => $i->idproduk))->result();
+        $data = array(
+        	'id' => $i->idproduk,
+    		  'name' => $produk[0]->nama,
+    		  'qty' => $i->jumlah,
+    		  'price' => $produk[0]->harga
+    		);
+    		$this->cart->insert($data);
+      }
+      $isi = $this->cart->contents();
+      $this->tampilcart($isi, array());
     }
 }
