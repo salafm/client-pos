@@ -89,6 +89,14 @@ class mdata extends CI_Model
 		$this->db->where($where)->delete($table);
 	}
 
+  function tampil_join1($table,$where){
+    return $this->db->query('SELECT '.$table.'.*, barang.nama FROM '.$table.' INNER JOIN barang ON '.$table.'.idbarang = barang.idbarang WHERE idtransaksi = "'.$where.'"');
+  }
+  
+  function tampil_join2($table,$where){
+    return $this->db->query('SELECT '.$table.'.*, produk.nama FROM '.$table.' INNER JOIN produk ON '.$table.'.idproduk = produk.idproduk WHERE idtransaksi = "'.$where.'"');
+  }
+
   function tampil_join3($table,$where){
     return $this->db->query('SELECT * FROM '.$table.' INNER JOIN barang ON '.$table.'.idbarang = barang.idbarang WHERE idproduk = "'.$where.'"');
   }

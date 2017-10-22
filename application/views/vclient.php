@@ -30,6 +30,25 @@
         padding : 3% 0 !important;
       }
 
+      .glyphicon-remove {
+        color: red;
+        font-size: 20px;
+      }
+
+      .glyphicon-ok{
+        color:green;
+        font-size: 20px;
+      }
+
+      .apaya{
+        color:red;
+        text-decoration: underline;
+      }
+      table.tabel{
+        width: 70%;
+  			margin-left: auto;
+  			margin-right: auto;
+      }
     </style>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <!-- Meta, title, CSS, favicons, etc. -->
@@ -37,7 +56,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Gentelella Alela! | </title>
+    <title>Waroenkpos | <?php echo $cabang['nama']?></title>
 
     <!-- Bootstrap -->
     <link href="<?php echo base_url('vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet');?>">
@@ -83,18 +102,18 @@
                       <span class=" fa fa-angle-down"></span>
                     </a>
                     <ul class="dropdown-menu dropdown-usermenu pull-right">
-                      <li><a href="javascript:;"> Profile</a></li>
+                      <!-- <li><a href="javascript:;"> Profile</a></li>
                       <li>
                         <a href="javascript:;">
                           <span class="badge bg-red pull-right">50%</span>
                           <span>Settings</span>
                         </a>
                       </li>
-                      <li><a href="">Help</a></li>
+                      <li><a href="">Help</a></li> -->
                       <li><a href="<?php echo site_url('login/logout');?>"><i class="fa fa-sign-out pull-right"></i> Log Out</a></li>
                     </ul>
                   </li>
-                  <li role="presentation" class="dropdown" style="float:right; padding-left:31px; padding-right:0px;">
+                  <!-- <li role="presentation" class="dropdown" style="float:right; padding-left:31px; padding-right:0px;">
                     <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
                       <i class="fa fa-envelope-o"></i>
                       <span class="badge bg-green">1</span>
@@ -121,7 +140,7 @@
                         </div>
                       </li>
                     </ul>
-                  </li>
+                  </li> -->
                 <div class="col-md-2 col-sm-4 col-xs-4 kotak">
                   <input class="form-control" value="<?php echo $cabang['nama']?>" disabled>
                 </div>
@@ -193,7 +212,8 @@
               <div class="x_panel">
                 <div class="x_title">
                   <h2><i class="glyphicon glyphicon-gift"></i> Produk</h2>
-                  <a class="btn btn-default btn-sm pull-right" id="tombol"><span class="fa fa-th-large"></span> Pilih Meja</a>
+                  <a class="btn btn-default btn-sm pull-right" id="tombol"><span class="glyphicon glyphicon-bed"></span> Pilih Meja</a>
+                  <a class="btn btn-default btn-sm pull-right" id="tombol2"><span class="glyphicon glyphicon-refresh"></span> Sinkronisasi</a>
                   <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
@@ -270,14 +290,14 @@
             <td><?php echo $b->idbarang; ?></td>
             <td><?php echo $b->nama; ?></td>
             <td>Rp. <?php echo number_format($b->harga,2,",","."); ?></td>
-            <td><?php echo $b->stok; ?></td>
+            <td><?php echo str_replace('.',',',($b->stok*1)); ?></td>
             <td><?php echo $b->satuan; ?></td>
             <td><?php echo $b->tanggal ?></td>
             </tr>
             <?php  } ?>
             </tbody>
             </table>
-            <a href="<?php echo site_url('client/reset'); ?>" class="btn btn-default btn-sm"><i class="fa fa-trash-o"></i> Clear</a>
+            <!-- <a href="<?php echo site_url('client/reset'); ?>" class="btn btn-default btn-sm"><i class="fa fa-trash-o"></i> Clear</a> -->
             </div>
             </div>
             </div>
@@ -297,32 +317,32 @@
                 <div class="x_content">
                   <div class="" role="tabpanel" data-example-id="togglable-tabs">
                     <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
-                      <li role="presentation" class=""><a href="#tab_content2" role="tab" id="profile-tab" data-toggle="tab" aria-expanded="false">Bahan Masuk</a>
+                      <li role="presentation" class="active"><a href="#tab_content2" role="tab" id="profile-tab" data-toggle="tab" aria-expanded="false">Bahan Masuk</a>
                       </li>
                       <li role="presentation" class=""><a href="#tab_content3" role="tab" id="profile-tab2" data-toggle="tab" aria-expanded="false">Barang Keluar</a>
                       </li>
                     </ul>
                     <div id="myTabContent" class="tab-content">
-                      <div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="profile-tab">
+                      <div role="tabpanel" class="tab-pane fade active in" id="tab_content2" aria-labelledby="profile-tab">
                         <div class="x_title">
                         <h2>Data Barang Masuk </h2>
                           <div class="clearfix"></div>
                           </div>
                           <div class="x_content">
-                            <table id="myTable1" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
+                            <table id="tb" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" width="100%">
                               <thead>
                                 <tr>
                                   <th>No. </th>
-                                  <th>ID Transaksi</th>
+                                  <th>ID Manifest</th>
                                   <th>Deskripsi</th>
-                                  <th>Waktu Transaksi</th>
+                                  <th>Waktu Diterima</th>
                                   <th>Info Detail</th>
                                 </tr>
                               </thead>
                               <tbody>
                                 <?php
                     						$no = 1;
-                    						foreach($barangmasuk as $b){
+                    						foreach($tm as $b){
                     					  ?>
                                     <tr id="<?php echo $b->idtransaksi; ?>">
                                     <td><?php echo $no++?></td>
@@ -346,13 +366,14 @@
                           <div class="clearfix"></div>
                           </div>
                           <div class="x_content">
-                            <table id="myTable2" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" style="width:100%">
+                            <table id="tk" class="table table-striped table-bordered dt-responsive nowrap" cellspacing="0" style="width:100%">
                               <thead>
                                 <tr>
                                   <th>No. </th>
                                   <th>ID Transaksi</th>
-                                  <th>Cabang Tujuan</th>
-                                  <th>Deskripsi</th>
+                                  <th>Nama Petugas</th>
+                                  <th>Total Item</th>
+                                  <th>Total Harga</th>
                                   <th>Waktu Transaksi</th>
                                   <th>Info Detail</th>
                                 </tr>
@@ -360,18 +381,15 @@
                               <tbody>
                                 <?php
                     						$no = 1;
-                    						foreach($barangkeluar as $bk){
+                    						foreach($tk as $bk){
                     					  ?>
                                     <tr id="<?php echo $bk->idtransaksi; ?>">
                                     <td><?php echo $no++?></td>
-                                    <td title="Kolom ini tidak bisa diedit"
-                                    class="" id="idtransaksi"><?php echo $bk->idtransaksi?></td>
-                                    <td title="Kolom ini tidak bisa diedit"
-                                    class="" id=""><?php echo $bk->nama?></td>
-                                    <td title="Kolom ini tidak bisa diedit"
-                                    class="desk" id=""><?php echo $bk->deskripsi?></td>
-                                    <td title="Kolom ini tidak bisa diedit"
-                                    class="" id=""><?php echo strftime("%A, %d/%m/%Y : %T", strtotime($bk->tanggal)); ?></td>
+                                    <td class="" id="idtransaksi"><?php echo $bk->idtransaksi?></td>
+                                    <td class="" id=""><?php echo $bk->nama?></td>
+                                    <td class="" id=""><?php echo $bk->totalbarang?></td>
+                                    <td class="" id="">Rp. <?php echo number_format($bk->totalharga,2,",",".")?></td>
+                                    <td class="" id=""><?php echo strftime("%A, %d/%m/%Y : %T", strtotime($bk->tanggal)); ?></td>
                                     <td><button class="btn btn-default btn-sm details" id="">
                                     <i class="fa fa-info-circle"></i>  &nbsp;details</button></td>
                                     </tr>
@@ -491,6 +509,38 @@
       </div><!-- /.modal -->
       <!-- End Bootstrap modal -->
 
+      <!-- Bootstrap modal -->
+      <div class="modal fade" id="modal_form_produk" role="dialog">
+      <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h3 class="modal-title"></h3>
+        </div>
+          <form action="#" id="form2" class="form-horizontal">
+        <div class="modal-body form">
+            <div class="form-body">
+              <div class="form-group">
+                <label class="control-label col-md-1" id="ikon"></label>
+                <label class="control-label col-md-2"> Id Manifest</label>
+                <div class="col-md-9">
+                  <input name="manifest" id="manifest" placeholder="Masukkan Id manifest yg sesuai" class="form-control" type="text" autocomplete="off" required>
+                </div>
+              </div>
+              <div class="modal-header">
+                <h4 class="" align="center">Daftar Barang</h4>
+              </div>
+              <div class="modal-body form" id="form-body4">
+              </div>
+            </div>
+            </div>
+            <div class="modal-footer" id="apaya">
+            </div>
+          </form>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div><!-- /.modal -->
+      <!-- End Bootstrap modal -->
 
     <!-- jQuery -->
     <script src="<?php echo base_url('vendors/jquery/dist/jquery.min.js');?>"></script>
@@ -512,6 +562,8 @@
     <!-- Custom Theme Scripts -->
     <script src="<?php echo base_url('build/js/custom.min.js');?>"></script>
     <script>
+    var table;
+    var tm;
     function fok(){
       $(document).on('focus','#inputbayar', function(){
         if($('#inputbayar').val() == 0){
@@ -663,16 +715,20 @@
           $("input").blur();
         }
       }).on('click','.tambah',function(){
+        var meja = $('#nomor').html().replace('Nomor Meja : ','');
         var id = $(this).prop('id');
-        $.get({
-          url:'<?php echo site_url('client/tambahcart/') ?>'+id,
-          dataType:'json',
-          success:function(data){
-            $('tbody.hasil').html(data.isi);
-            $('#isi').html(data.isinya);
-            $('#'+id).focus();
-          }
-        });
+        if(meja == '--- '){
+          $('#tombol').click();
+        }else {
+          $.get({
+            url:'<?php echo site_url('client/tambahcart/') ?>'+id,
+            dataType:'json',
+            success:function(data){
+              $('tbody.hasil').html(data.isi);
+              $('#'+id).focus();
+            }
+          });
+        }
       }).on('click','.kurang',function(){
         var id = $(this).prop('id');
         $.get({
@@ -693,20 +749,23 @@
       });
 
       $('#form').submit(function (e){
+        var id = $('#nomor').html().replace('Nomor Meja : ','');
         var value = $('#inputbayar').val();
         $('#inputbayar').val('0');
         $.ajax({
           url : '<?php echo site_url('client/simpantransaksi/');?>',
           type: "POST",
-          data: $('#form').serialize(),
+          data: $('#form').serialize()+'&idmeja='+id,
           dataType:'json',
           success: function(data){
-            $('#myTable, #myTable1').DataTable().destroy();
+            $('#myTable, #myTable1, #tk').DataTable().destroy();
             $('#myTable tbody').html(data.produk);
-    				$('#myTable1 tbody').html(data.barang);
+            $('#myTable1 tbody').html(data.barang);
+    				$('#tk tbody').html(data.tk);
     				$(document).ready(function() {
               inittable('#myTable1');
     					inittable('#myTable');
+              table = $('#tk').DataTable({responsive:false});
     				});
             $('#pendapatan').val('Rp. '+data.penghasilan);
             $('tbody.hasil').html(data.isi);
@@ -731,7 +790,9 @@
           for (var i = 0; i < data.length; i++) {
             var id = i + 1;
             if(data[i] == 1){
-              $('#meja'+id).attr('class','btn btn-danger col-md-2 meja')
+              $('#meja'+id).attr('class','btn btn-danger col-md-2 meja');
+            }else{
+              $('#meja'+id).attr('class','btn btn-default col-md-2 meja');
             }
           }
         }
@@ -757,11 +818,195 @@
         url:'<?php echo site_url('client/transaksi') ?>',
         type:'post',
         data: $('#form').serialize()+'&idmeja='+id,
-        success:function(data){
+        success:function(){
           $('#clear').click();
+          $('#nomor').html('Nomor Meja : --- ');
         }
       })
     });
+
+    //--------------------sinkronisasi-------------------------------------------
+    //show modal tambah produk
+      $(function(){
+        $(document).on('click','#tombol2', function(){
+          var isi = '<input type="button" id="btnSave3" class="btn btn-default" value="Konfirmasi"/><button type="button" class="btn btn-default batal1" data-dismiss="modal">Batal</button>';
+          $('#form2')[0].reset();
+          $('#modal_form_produk').modal('show');
+          $('.modal-title').text('Sinkronisasi Barang dan Produk');
+          $('#form-body4').html('<a class="btn btn-primary hidden btn-sm pluss" id="plus0"><a>');
+          $('#apaya').html(isi);
+          $('#ikon').html('');
+          $.ajax({
+            url: '<?php echo site_url('client/sink') ?>',
+            type: 'get',
+            dataType : 'JSON',
+            success:function(data){
+              $('#myTable').DataTable().destroy();
+              $('#myTable tbody').html(data.produk);
+              $(document).ready(function() {
+                inittable('#myTable');
+              });
+              std();
+            }
+          });
+       }).on('click', 'a.pluss' ,function(){
+         var id = ($(this).prop('id')).replace('plus','');
+         var idb = parseInt(id)+1;
+             $("#form-body4").append('<div class="input2" id="sink'+idb+'">'
+           +'<div class="form-group"> <label class="control-label col-md-1 icon"></label>'
+           +'<label class="control-label col-md-2" style="padding-left:0px">Id Barang</label><div class="col-md-4"><input name="idb[]" id="jml" class="form-control" type="text" autocomplete="off" required></div>'
+           +'<label class="control-label col-md-1" style="padding-left:3px">Jumlah</label><div class="col-md-4" ><input name="jml[]" value="" id="" class="form-control satuan" type="text"></div>'
+           +'<div class="col-md-1"><a class="btn btn-primary btn-sm pluss hidden" id="plus'+idb+'"><i class="fa fa-plus"></i></a></div></div>');
+       }).on('input','#manifest', function(){
+         var id = $(this).val()+'abc';
+         $.ajax({
+           url: '<?php echo site_url('client/cekid/') ?>'+id,
+           type:'get',
+           success:function(data){
+             if(data == 0){
+               $('#ikon').html('<span class="glyphicon glyphicon-remove" ></span>');
+               $('#form-body4').html('<a class="btn btn-primary hidden btn-sm pluss" id="plus0"><a>');
+             }else{
+               $('#ikon').html('<span class="glyphicon glyphicon-ok" ></span>');
+               for (var i = 0; i < data; i++) {
+                 $('#plus'+i).click();
+               }
+             }
+           }
+         })
+       }).on('click','#btnSave3', function(){
+         $.ajax({
+           url: '<?php echo site_url('client/cekbarang') ?>',
+           type:'get',
+           data: $('#form2').serialize(),
+           dataType:'JSON',
+           success:function(data){
+             var flag =1;
+             for (var i = 0; i < data.length; i++) {
+               var id = i+1;
+               if(data[i] == 0){
+                 flag = 0;
+                 $('#sink'+id).find('label.icon').html('<span class="glyphicon glyphicon-remove" ></span>');
+               }else {
+                 $('#sink'+id).find('label.icon').html('<span class="glyphicon glyphicon-ok" ></span>');
+               }
+             }
+
+             if(flag == 0){
+               var isi = '<label class="control-label pull-left apaya">Silahkan hubungi server</label>'
+                        +'<input type="button" id="btnSave3" class="btn btn-default" value="Konfirmasi"/>'
+                        +'<button type="button" class="btn btn-default batal1" data-dismiss="modal">Batal</button>';
+               $('#apaya').html(isi);
+             }else {
+               var isi = '<input type="button" id="sinkron" class="btn btn-default pull-left" value="Sinkronkan"/>'
+                        +'<input type="button" id="btnSave3" class="btn btn-default" value="Konfirmasi"/>'
+                        +'<button type="button" class="btn btn-default batal1" data-dismiss="modal">Batal</button>';
+              $('#apaya').html(isi);
+             }
+           }
+         })
+       }).on('click', '#sinkron', function(){
+         $.ajax({
+           url: '<?php echo site_url('client/simpanbarang') ?>',
+           type:'post',
+           data: $('#form2').serialize(),
+           dataType:'JSON',
+           success:function(data){
+             $('#modal_form_produk').modal('hide');
+             $('#myTable, #myTable1, #tb').DataTable().destroy();
+             $('#myTable1 tbody').html(data.barang);
+             $('#myTable tbody').html(data.produk);
+             $('#tb tbody').html(data.tm);
+             $(document).ready(function() {
+               inittable('#myTable');
+               inittable('#myTable1');
+               tm = $('#tb').DataTable({responsive:false  });
+             });
+             std();
+             alert('Berhasil melakukan sinkronisasi');
+           }
+         })
+       })
+     });
+
+     //---------------------------details transaksi---------------------------------
+
+     //details details barang masuk
+     function format (id) {
+       return '<table class="table dt-responsive table-bordered nowrap tabel" width="100%"><thead>'
+       +'<tr><th colspan="5" style="text-align:center;background:#ededed">Detail transaksi '+id+'</th>'
+       +'</tr><tr><th>Nama barang</th><th>Harga</th><th>Jumlah</th><th>Satuan</th><th>Total Harga</th></tr></thead>'
+       +'<tbody class="'+id+'"></tbody></table>';
+     }
+
+     //show details barang masuk
+     $(document).ready(function(){
+        tm = $('#tb').DataTable({
+         responsive:false
+       });
+
+       $('#tb tbody').on('click', 'td button.details', function () {
+         var tr = $(this).closest('tr');
+         var row = tm.row(tr);
+         var id = $(this).closest('tr').prop('id');
+         $.get({
+           url:'<?php echo site_url('client/detailbarangmasuk/') ?>'+id,
+           success: function(data){
+             $('.'+id).html(data);
+           }
+         });
+
+         if ( row.child.isShown() ) {
+             // This row is already open - close it
+             row.child.hide();
+             tr.removeClass('shown');
+         }
+         else {
+             // Open this row
+             row.child( format(id) ).show();
+             tr.addClass('shown');
+         }
+       });
+     });
+
+     //details barang keluar
+     function format2 (id) {
+       return '<table id="myTable4" class="table dt-responsive table-bordered nowrap  tabel" width="100%"><thead>'
+       +'<tr><th colspan="6" style="text-align:center;background:#ededed">Detail transaksi '+id+'</th>'
+       +'</tr><tr><th colspan="3" style="text-align:center;">Produk</th><th colspan="3" style="text-align:center;">Detail bahan keluar</th></tr>'
+       +'<tr><th>Nama produk</th><th>Jumlah</th><th>Harga Satuan</th><th>Nama barang</th><th>Jumlah keluar</th><th>Satuan</th></tr></thead>'
+       +'<tbody class="'+id+'"></tbody></table>';
+     }
+
+     //show details barang keluar
+       $(document).ready(function(){
+         table = $('#tk').DataTable({
+           responsive:false
+         });
+
+         $('#tk tbody').on('click', 'td button.details', function () {
+           var tr = $(this).closest('tr');
+           var row = table.row(tr);
+           var id = $(this).closest('tr').prop('id');
+           $.get({
+             url:'<?php echo site_url('client/detailbarangkeluar/') ?>'+id,
+             success: function(data){
+               $('.'+id).html(data);
+             }
+           });
+
+           if ( row.child.isShown() ) {
+               // This row is already open - close it
+               row.child.hide();
+               tr.removeClass('shown');
+           }
+           else {
+               // Open this row
+               row.child(format2(id)).show();
+               tr.addClass('shown');
+           }
+         });
+       });
   </script>
   </body>
 </html>
